@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+ollama
+httpx
+duckduckgo-search

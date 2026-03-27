@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered Question Answering System with reasoning and tool usage, powered by Llama3">
+    <title>QA Agent — Intelligent Question Answering</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Background animated gradient -->
+    <div class="bg-gradient"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header" id="app-header">
+            <div class="header-left">
+                <div class="logo-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/>
+                        <line x1="10" y1="22" x2="14" y2="22"/>
+                        <line x1="9" y1="17" x2="15" y2="17"/>
+                    </svg>
+                </div>
+                <div class="header-info">
+                    <h1>QA Agent</h1>
+                    <span class="model-badge" id="model-badge">
+                        <span class="status-dot"></span>
+                        Connecting...
+                    </span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" id="btn-tools" title="View Available Tools">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                    </svg>
+                </button>
+                <button class="btn-icon" id="btn-clear" title="Clear Conversation">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Tools Panel (hidden by default) -->
+        <div class="tools-panel" id="tools-panel">
+            <div class="tools-panel-header">
+                <h3>🛠️ Available Tools</h3>
+                <button class="btn-close" id="btn-close-tools">&times;</button>
+            </div>
+            <div class="tools-grid" id="tools-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <main class="chat-container" id="chat-container">
+            <!-- Welcome Message -->
+            <div class="welcome-screen" id="welcome-screen">
+                <div class="welcome-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#818cf8"/>
+                                <stop offset="100%" style="stop-color:#c084fc"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/>
+                        <line x1="10" y1="22" x2="14" y2="22"/>
+                        <line x1="9" y1="17" x2="15" y2="17"/>
+                    </svg>
+                </div>
+                <h2>What can I help you with?</h2>
+                <p>I can reason through problems, search the web, look up Wikipedia, do calculations, and more.</p>
+                <div class="suggestion-chips">
+                    <button class="chip" data-query="What is the current date and time?">📅 Current date & time</button>
+                    <button class="chip" data-query="What is the square root of 2025 times pi?">🔢 Math calculation</button>
+                    <button class="chip" data-query="Tell me about the history of artificial intelligence">📚 Wikipedia lookup</button>
+                    <button class="chip" data-query="Search the web for latest developments in quantum computing">🔍 Web search</button>
+                </div>
+            </div>
+
+            <!-- Messages will be appended here -->
+            <div class="messages" id="messages"></div>
+        </main>
+
+        <!-- Input Area -->
+        <footer class="input-area" id="input-area">
+            <div class="input-wrapper">
+                <textarea
+                    id="user-input"
+                    placeholder="Ask me anything..."
+                    rows="1"
+                    autofocus
+                ></textarea>
+                <button class="btn-send" id="btn-send" title="Send Message">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="input-footer">
+                <span>Powered by <strong>Llama 3</strong> via Ollama • Responses may be inaccurate</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
